@@ -1,5 +1,16 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+const generateAccessToken = (user) => {
+  return jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_KEY, {
+    expiresIn: "5m",
+  });
+};
+
+const generateRefreshToken = (user) => {
+  return jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN_KEY);
+};
 
 exports.signup = async (req, res) => {
   //get values from request
@@ -46,11 +57,35 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   // get values from request
-  console.log("called");
   const { email, password } = req.body;
-  console.log(email, password, " from controller");
-  res.json({ email, password });
+
+  let error = null;
   // validate password and user from db
 
-  // create access and refresh tokens
+  const user = await User.findOne({ email });
+  if (!user)
+    return res
+      .status(400)
+      .json({ message: "User with this email does not exist" });
+  //Check whether password is correct
+  try {
+    bcrypt.compare(password, user.password, (err, result) => {
+      if (result) {
+        //Generate an access token
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+        // refreshTokens.push(refreshToken);
+        return res.json({
+          userId: user._id,
+          userName: `${user.firstName} ${user.lastName}`,
+          accessToken,
+          refreshToken,
+        });
+      } else if (err) {
+        return res.status(400).json("Username or password incorrect!");
+      }
+    });
+  } catch (error) {
+    return res.status(200).json({ error: "Failed to log in" });
+  }
 };

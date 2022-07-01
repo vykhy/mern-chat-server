@@ -1,6 +1,7 @@
 const app = require("express")();
 const env = require("dotenv");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 var bodyParser = require("body-parser");
 
