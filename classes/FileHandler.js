@@ -15,7 +15,7 @@ class FileHandler {
   // set refresh token
   setRefreshToken(id, token) {
     const tokens = JSON.parse(fs.readFileSync(FileHandler.filePath));
-    let index = this._indexOfToken(id, tokens);
+    let index = this._indexOfToken(id, "id", tokens);
     if (index !== null) {
       tokens[index].token = token;
     } else {
@@ -28,17 +28,26 @@ class FileHandler {
   // remove refresh token
   removeRefreshToken(id) {
     const tokens = JSON.parse(fs.readFileSync(FileHandler.filePath));
-    let index = this._indexOfToken(id, tokens);
+    let index = this._indexOfToken(id, "id", tokens);
+    tokens.splice(index, 1);
+    fs.writeFileSync(FileHandler.filePath, JSON.stringify(tokens));
+  }
+
+  // remove refresh token identify by token
+  removeRefreshTokenByToken(token) {
+    const tokens = JSON.parse(fs.readFileSync(FileHandler.filePath));
+    let index = this._indexOfToken(token, "token", tokens);
     tokens.splice(index, 1);
     fs.writeFileSync(FileHandler.filePath, JSON.stringify(tokens));
   }
 
   // return index of a token based on its id
-  _indexOfToken(ido, tokens) {
+  _indexOfToken(ido, identifier, tokens) {
     let idx = null;
-    let id = mongoose.Types.ObjectId(ido).toString();
+    let id =
+      typeof ido !== "string" ? mongoose.Types.ObjectId(ido).toString() : ido;
     for (let i = 0; i < tokens.length; i++) {
-      if (tokens[i].id === id) {
+      if (tokens[i][identifier] === id) {
         idx = i;
         break;
       }

@@ -5,13 +5,14 @@ const { FileHandler } = require("../classes/FileHandler");
 
 const generateAccessToken = (id) => {
   return jwt.sign({ id: id }, process.env.ACCESS_TOKEN_KEY, {
-    expiresIn: "15m",
+    expiresIn: "5s",
   });
 };
 
 const generateRefreshToken = (id) => {
+  console.log("new refresh token");
   return jwt.sign({ id: id }, process.env.REFRESH_TOKEN_KEY, {
-    expiresIn: "3d",
+    expiresIn: "30s",
   });
 };
 
@@ -35,7 +36,10 @@ exports.refreshToken = async (req, res) => {
     const accessToken = generateAccessToken(decoded.id);
     return res.json({ accessToken });
   } catch (err) {
-    console.log(err);
+    // token is expired or tampered, so remove it from tokens list
+    let fileHandler = new FileHandler();
+    fileHandler.removeRefreshTokenByToken(token);
+    res.clearCookie(jwt, { httpOnly: true, secure: false, sameSite: "None" });
     return res.sendStatus(500);
   }
   // update refresh token
