@@ -1,17 +1,45 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { FileHandler } = require("../classes/FileHandler");
 
-const generateAccessToken = (user) => {
-  return jwt.sign({ id: user._id }, process.env.ACCESS_TOKEN_KEY, {
-    expiresIn: "5m",
+const generateAccessToken = (id) => {
+  return jwt.sign({ id: id }, process.env.ACCESS_TOKEN_KEY, {
+    expiresIn: "15m",
   });
 };
 
-const generateRefreshToken = (user) => {
-  return jwt.sign({ id: user._id }, process.env.REFRESH_TOKEN_KEY);
+const generateRefreshToken = (id) => {
+  return jwt.sign({ id: id }, process.env.REFRESH_TOKEN_KEY, {
+    expiresIn: "3d",
+  });
 };
 
+exports.refreshToken = async (req, res) => {
+  const token = req.cookies.jwt;
+  // force login if no refresh token found
+  if (!token) return res.sendStatus(401);
+
+  // verify refresh token
+  try {
+    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_KEY);
+
+    // get user with their respective refresh tokens from storage
+    let fileHandler = new FileHandler();
+    let user = fileHandler.getRefreshToken(decoded.id);
+
+    // if no refresh token found for user, force login
+    if (!user) return res.sendStatus(401);
+
+    //generate and return new access token
+    const accessToken = generateAccessToken(decoded.id);
+    return res.json({ accessToken });
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
+  // update refresh token
+};
 exports.signup = async (req, res) => {
   //get values from request
   const { firstName, lastName, email, password, confirmPassword } = req.body;
@@ -19,9 +47,9 @@ exports.signup = async (req, res) => {
   // VALIDATE INPUT
   let error = null;
   // check if empty values
-  if (firstName == "" || lastName === "" || email == "" || password == "")
+  if (firstName == "" || lastName === "" || email == "" || password == "") {
     error = "All fields are required";
-
+  }
   //check if user with email already exists
   const exists = await User.findOne({ email });
   if (exists) error = "User with this email already exists";
@@ -72,14 +100,26 @@ exports.login = async (req, res) => {
     bcrypt.compare(password, user.password, (err, result) => {
       if (result) {
         //Generate an access token
-        const accessToken = generateAccessToken(user);
-        const refreshToken = generateRefreshToken(user);
-        // refreshTokens.push(refreshToken);
+        const accessToken = generateAccessToken(user._id);
+        const refreshToken = generateRefreshToken(user._id);
+
+        // save token to file
+        const fileHandler = new FileHandler();
+        fileHandler.setRefreshToken(user._id, refreshToken);
+
+        // set refresh token in secure cookie
+        res.cookie("jwt", refreshToken, {
+          secure: true,
+          httpOnly: true,
+          sameSite: "None",
+          maxAge: 24 * 3600 * 1000,
+        });
+
+        // respond with data
         return res.json({
           userId: user._id,
           userName: `${user.firstName} ${user.lastName}`,
           accessToken,
-          refreshToken,
         });
       } else if (err) {
         return res.status(400).json("Username or password incorrect!");
