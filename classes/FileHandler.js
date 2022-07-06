@@ -1,4 +1,5 @@
 const fs = require("fs");
+const mongoose = require("mongoose");
 
 class FileHandler {
   // file path of refresh tokens
@@ -15,8 +16,7 @@ class FileHandler {
   setRefreshToken(id, token) {
     const tokens = JSON.parse(fs.readFileSync(FileHandler.filePath));
     let index = this._indexOfToken(id, tokens);
-
-    if (index) {
+    if (index !== null) {
       tokens[index].token = token;
     } else {
       tokens.push({ id, token });
@@ -34,8 +34,9 @@ class FileHandler {
   }
 
   // return index of a token based on its id
-  _indexOfToken(id, tokens) {
+  _indexOfToken(ido, tokens) {
     let idx = null;
+    let id = mongoose.Types.ObjectId(ido).toString();
     for (let i = 0; i < tokens.length; i++) {
       if (tokens[i].id === id) {
         idx = i;
