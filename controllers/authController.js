@@ -5,14 +5,14 @@ const { FileHandler } = require("../classes/FileHandler");
 
 const generateAccessToken = (id) => {
   return jwt.sign({ id: id }, process.env.ACCESS_TOKEN_KEY, {
-    expiresIn: "5s",
+    expiresIn: "15m",
   });
 };
 
 const generateRefreshToken = (id) => {
   console.log("new refresh token");
   return jwt.sign({ id: id }, process.env.REFRESH_TOKEN_KEY, {
-    expiresIn: "30s",
+    expiresIn: "3d",
   });
 };
 

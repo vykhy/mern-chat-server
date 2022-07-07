@@ -26,11 +26,18 @@ mongoose.connect(process.env.DB_URL, () => console.log("db connected..."));
 
 // ROUTES
 const authRouter = require("./routers/authRouter");
+const contactRouter = require("./routers/contactRouter");
+
 app.use("/auth", authRouter);
-// app.use(verify);
+app.use("/contacts", verify, contactRouter);
 app.get("/test", verify, (req, res) => {
   console.log("adad");
   return res.json({ text: "You are a God of programming" });
+});
+app.get("/users/all", async (req, res) => {
+  const User = require("./models/User");
+  console.log(await User.find());
+  res.send("dodne");
 });
 
 app.listen(8000);
