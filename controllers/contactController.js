@@ -12,7 +12,7 @@ exports.getContacts = async (req, res) => {
   try {
     const user = await User.findOne({
       _id: userId,
-    }).populate("contacts.contactId");
+    }).populate("contacts.contactId", "-chats -contacts -password");
     return res.json({ contacts: user.contacts });
   } catch (err) {
     console.log(err);
