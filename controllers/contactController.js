@@ -2,6 +2,31 @@ const Contact = require("../models/Contact");
 const User = require("../models/User");
 const mongoose = require("mongoose");
 
+/**
+ * fetches all the contacts of a user
+ * @param {*} req
+ * @param {*} res
+ * @returns
+ */
+exports.getContacts = async (req, res) => {
+  const userId = req.headers.currentuser;
+  try {
+    const userWithContacts = await User.findOne({
+      _id: userId,
+    }).populate("contacts");
+    return res.json({ contacts: userWithContacts.contacts });
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
+};
+
+/**
+ * handles adding a new contact to a user
+ * @param {} req
+ * @param {*} res
+ * @returns
+ */
 exports.addContact = async (req, res) => {
   // get form values
   const { name, email } = req.body;
@@ -45,13 +70,11 @@ exports.addContact = async (req, res) => {
     );
     // console.log(user);
     // console.log(contact);
-    return res
-      .status(200)
-      .json({
-        contactId: contact._id,
-        contactName: contact.name,
-        contactEmail: contact.email,
-      });
+    return res.status(200).json({
+      contactId: contact._id,
+      contactName: contact.name,
+      contactEmail: contact.email,
+    });
   } catch (err) {
     console.log(err);
     return res.sendStatus(500);
