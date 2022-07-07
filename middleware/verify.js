@@ -12,6 +12,7 @@ function verify(req, res, next) {
       authorization.split(" ")[1],
       process.env.ACCESS_TOKEN_KEY
     );
+    req.userId = decoded.id;
     next();
   } catch (err) {
     return res.sendStatus(403);

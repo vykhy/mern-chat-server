@@ -9,7 +9,7 @@ const mongoose = require("mongoose");
  * @returns
  */
 exports.getContacts = async (req, res) => {
-  const userId = req.headers.currentuser;
+  const userId = req.userId;
   try {
     const userWithContacts = await User.findOne({
       _id: userId,
@@ -30,7 +30,7 @@ exports.getContacts = async (req, res) => {
 exports.addContact = async (req, res) => {
   // get form values
   const { name, email } = req.body;
-  const userId = req.headers.currentuser;
+  const userId = req.userId;
   let error = null;
   if (name === "" || name === undefined || name === null) {
     error = "Name cannot be empty";
