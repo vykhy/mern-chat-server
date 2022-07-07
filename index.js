@@ -27,6 +27,7 @@ mongoose.connect(process.env.DB_URL, () => console.log("db connected..."));
 // ROUTES
 const authRouter = require("./routers/authRouter");
 const contactRouter = require("./routers/contactRouter");
+const User = require("./models/User");
 
 app.use("/auth", authRouter);
 app.use("/contacts", verify, contactRouter);
@@ -35,8 +36,18 @@ app.get("/test", verify, (req, res) => {
   return res.json({ text: "You are a God of programming" });
 });
 app.get("/users/all", async (req, res) => {
-  const User = require("./models/User");
   console.log(await User.find());
+  res.send("dodne");
+});
+app.get("/deletecontacts", verify, async (req, res) => {
+  const user = await User.findByIdAndUpdate(
+    {
+      _id: mongoose.Types.ObjectId(req.userId),
+    },
+    {
+      contacts: [],
+    }
+  );
   res.send("dodne");
 });
 

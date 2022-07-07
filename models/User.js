@@ -26,8 +26,18 @@ const User = new mongoose.Schema(
       default: [],
     },
     contacts: {
-      type: [mongoose.Schema.Types.ObjectId],
-      ref: "Contact",
+      type: [
+        {
+          name: {
+            type: String,
+            required: true,
+          },
+          contactId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User",
+          },
+        },
+      ],
       default: [],
     },
     profilePicture: {

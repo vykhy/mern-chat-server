@@ -1,4 +1,3 @@
-const Contact = require("../models/Contact");
 const User = require("../models/User");
 const mongoose = require("mongoose");
 
@@ -11,10 +10,10 @@ const mongoose = require("mongoose");
 exports.getContacts = async (req, res) => {
   const userId = req.userId;
   try {
-    const userWithContacts = await User.findOne({
+    const user = await User.findOne({
       _id: userId,
-    }).populate("contacts");
-    return res.json({ contacts: userWithContacts.contacts });
+    }).populate("contacts.contactId");
+    return res.json({ contacts: user.contacts });
   } catch (err) {
     console.log(err);
     return res.sendStatus(500);
@@ -31,13 +30,14 @@ exports.addContact = async (req, res) => {
   // get form values
   const { name, email } = req.body;
   const userId = req.userId;
+  let userToAdd;
   let error = null;
   if (name === "" || name === undefined || name === null) {
     error = "Name cannot be empty";
   } else {
-    const user = await User.findOne({ email });
+    userToAdd = await User.findOne({ email });
 
-    if (!user) {
+    if (!userToAdd) {
       error = "User with this email does not exist";
     }
   }
@@ -46,34 +46,22 @@ exports.addContact = async (req, res) => {
   }
   // insert into database
   try {
-    // prevent duplicate contact by searching for
-    // a contact with the same owner and email as the new contact
-    const exists = await Contact.findOne({
-      owner: mongoose.Types.ObjectId(userId),
-      email: email,
-    });
-    if (exists) {
-      return res.json({ error: "You have already saved this contact" });
-    }
-    // create contact if doesnt already exist
-    const contact = await Contact.create({
-      name,
-      owner: mongoose.Types.ObjectId(userId),
-      email,
-    });
+    const contact = {
+      name: name,
+      contactId: userToAdd._id,
+    };
     const user = await User.findOneAndUpdate(
       { _id: mongoose.Types.ObjectId(userId) },
       {
-        $push: { contacts: contact._id },
+        $addToSet: { contacts: contact },
       },
       { new: true }
     );
     // console.log(user);
     // console.log(contact);
     return res.status(200).json({
-      contactId: contact._id,
-      contactName: contact.name,
-      contactEmail: contact.email,
+      contactId: userToAdd._id,
+      contactName: name,
     });
   } catch (err) {
     console.log(err);
