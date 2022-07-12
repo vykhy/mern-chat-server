@@ -21,6 +21,8 @@ app.use(cookieParser());
 env.config();
 const PORT = process.env.APP_PORT;
 
+const userIdSocketIdMap = {};
+
 // DB connection
 mongoose.connect(process.env.DB_URL, () => console.log("db connected..."));
 
@@ -44,11 +46,18 @@ const authRouter = require("./routers/authRouter");
 const contactRouter = require("./routers/contactRouter");
 const User = require("./models/User");
 
+// SOCKET MIDDLEWARE
+// SOCKET EVENTS
 socket.on("connection", (socket) => {
   console.log("socket connected...");
+  if (socket.handshake && socket.handshake.query.userId) {
+    userIdSocketIdMap[socket.handshake.query.userId] = socket.id;
+  }
 
-  socket.on("yes", () => {
-    socket.emit("working", { response: "event received" });
+  socket.on("send-message", (msg) => {
+    console.log(msg);
+    socket.emit("server-received-message", { response: "message received" });
+    socket.emit("found", { response: "to all I think" });
   });
   socket.on("disconnect", () => {
     console.log("socket disconnected");
@@ -57,14 +66,17 @@ socket.on("connection", (socket) => {
 
 app.use("/auth", authRouter);
 app.use("/contacts", verify, contactRouter);
+// for assistance during development
 app.get("/test", verify, (req, res) => {
   console.log("adad");
   return res.json({ text: "You are a God of programming" });
 });
+// for assistance during development
 app.get("/users/all", async (req, res) => {
   console.log(await User.find());
   res.send("dodne");
 });
+// for assistance during development
 app.get("/deletecontacts", verify, async (req, res) => {
   const user = await User.findByIdAndUpdate(
     {
