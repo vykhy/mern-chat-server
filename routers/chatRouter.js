@@ -1,9 +1,6 @@
-/**
- * handle messages in chats
- *
- * message received by server
- *
- * message received by recipient
- *
- * message read by recipient
- */
+const router = require('express').Router()
+const chatController = require('../controllers/chatController')
+
+router.get('/', chatController.getChats)
+
+module.exports = router

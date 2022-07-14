@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
 const { verify } = require("./middleware/verify");
+const { handleSendMessage } = require("./socketEventHandlers/sendMessage.js");
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -44,38 +45,42 @@ const socket = require("socket.io")(http, {
 // ROUTES
 const authRouter = require("./routers/authRouter");
 const contactRouter = require("./routers/contactRouter");
+const chatRouter = require("./routers/chatRouter");
 const User = require("./models/User");
 
 // SOCKET MIDDLEWARE
-// SOCKET EVENTS
-socket.on("connection", (socket) => {
-  console.log("socket connected...");
+socket.use((socket, next) => {
   if (socket.handshake && socket.handshake.query.userId) {
     userIdSocketIdMap[socket.handshake.query.userId] = socket.id;
   }
+  next();
+});
+// SOCKET EVENTS
+socket.on("connection", (io) => {
+  console.log("socket connected...");
 
-  socket.on("send-message", (msg) => {
-    console.log(msg);
-    socket.emit("server-received-message", { response: "message received" });
-    socket.emit("found", { response: "to all I think" });
+  io.on("send-message", (data) => {
+    handleSendMessage(io, data, userIdSocketIdMap);
+
+    io.emit("found", { response: "message received" });
   });
-  socket.on("disconnect", () => {
+  io.on("disconnect", () => {
     console.log("socket disconnected");
   });
 });
 
 app.use("/auth", authRouter);
 app.use("/contacts", verify, contactRouter);
+app.use("/chats", verify, chatRouter);
 // for assistance during development
 app.get("/test", verify, (req, res) => {
   console.log("adad");
   return res.json({ text: "You are a God of programming" });
 });
 // for assistance during development
-app.get("/users/all", async (req, res) => {
-  console.log(await User.find());
-  res.send("dodne");
-});
+function showUsers(req, res) {
+  User.find().then((users) => console.log(users));
+}
 // for assistance during development
 app.get("/deletecontacts", verify, async (req, res) => {
   const user = await User.findByIdAndUpdate(
@@ -88,5 +93,7 @@ app.get("/deletecontacts", verify, async (req, res) => {
   );
   res.send("dodne");
 });
+
+// showUsers();
 
 http.listen(process.env.PORT || 8000);
