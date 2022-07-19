@@ -2,16 +2,18 @@ const Chat = require("../models/Chat");
 const Message = require("../models/Message");
 const mongoose = require("mongoose");
 
-exports.createChat = async (userId1, userId2) => {
-  let id1 = userId1;
-  let id2 = userId2;
+exports.createChat = async (req, res) => {
+  console.log(req.body);
+  let { userId1, userId2 } = req.body;
+
   try {
-    if (typeof id1 === "string") id1 = mongoose.Types.ObjectId(id1);
-    if (typeof id2 === "string") id2 = mongoose.Types.ObjectId(id2);
     const chat = await Chat.create({
-      users: [id1, id2],
+      users: [
+        mongoose.Types.ObjectId(userId1),
+        mongoose.Types.ObjectId(userId2),
+      ],
     });
-    return chat._id;
+    return res.json(chat);
   } catch (err) {
     console.log(err);
     return new Error(err);

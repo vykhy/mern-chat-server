@@ -47,6 +47,8 @@ const authRouter = require("./routers/authRouter");
 const contactRouter = require("./routers/contactRouter");
 const chatRouter = require("./routers/chatRouter");
 const User = require("./models/User");
+const Chat = require("./models/Chat");
+const Message = require("./models/Message");
 
 // SOCKET MIDDLEWARE
 socket.use((socket, next) => {
@@ -60,7 +62,7 @@ socket.on("connection", (io) => {
   console.log("socket connected...");
 
   io.on("send-message", (data) => {
-    handleSendMessage(io, data, userIdSocketIdMap);
+    handleSendMessage(socket, io, data, userIdSocketIdMap);
 
     io.emit("found", { response: "message received" });
   });
@@ -81,6 +83,13 @@ app.get("/test", verify, (req, res) => {
 function showUsers(req, res) {
   User.find().then((users) => console.log(users));
 }
+function showChats() {
+  Chat.find().then((chat) => console.log(chat));
+}
+function deleteChats() {
+  Chat.deleteMany().then((resp) => console.log(resp.deletedCount));
+  Message.deleteMany().then((resp) => console.log(resp.deletedCount));
+}
 // for assistance during development
 app.get("/deletecontacts", verify, async (req, res) => {
   const user = await User.findByIdAndUpdate(
@@ -94,6 +103,8 @@ app.get("/deletecontacts", verify, async (req, res) => {
   res.send("dodne");
 });
 
-// showUsers();
+//showUsers();
+//showChats();
+//deleteChats();
 
 http.listen(process.env.PORT || 8000);
