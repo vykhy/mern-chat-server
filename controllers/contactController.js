@@ -21,6 +21,35 @@ exports.getContacts = async (req, res) => {
 };
 
 /**
+ * fetch a contact by id
+ * @param {*} req
+ * @param {*} res
+ * @returns
+ */
+exports.getContactById = async (req, res) => {
+  const userId = req.userId;
+  const contactId = req.params.id;
+  try {
+    const user = await User.findOne({
+      _id: userId,
+    }).populate("contacts.contactId", "-chats -contacts -password");
+    // console.log(user.contacts);
+    console.log(contactId);
+    // const contact = user.contacts.find(
+    //   (contact) => contact.contactId._id == contactId
+    // );
+    const contact = user.contacts.find(
+      (contact) =>
+        mongoose.Types.ObjectId(contact.contactId._id).valueOf() == contactId
+    );
+    return res.json(contact);
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
+};
+
+/**
  * handles adding a new contact to a user
  * @param {} req
  * @param {*} res

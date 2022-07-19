@@ -105,6 +105,6 @@ app.get("/deletecontacts", verify, async (req, res) => {
 
 //showUsers();
 //showChats();
-//deleteChats();
+deleteChats();
 
 http.listen(process.env.PORT || 8000);
