@@ -13,7 +13,11 @@ exports.createChat = async (req, res) => {
         mongoose.Types.ObjectId(userId2),
       ],
     });
-    return res.json(chat);
+    const newChat = await Chat.findOne({ _id: chat._id }).populate(
+      "users",
+      "-chats -contacts -password"
+    );
+    return res.json(newChat);
   } catch (err) {
     console.log(err);
     return new Error(err);
@@ -30,7 +34,7 @@ exports.getChats = async (req, res) => {
         $in: { users: id },
       },
       "-createdAt -updatedAt"
-    );
+    ).populate("users", "-chats -contacts -password");
     const chatsWithMessages = await Promise.all(
       chats.map(async (chat) => {
         const messages = await Message.find({ chatId: chat._id });

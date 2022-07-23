@@ -11,7 +11,10 @@ exports.handleSendMessage = async (socket, io, data, userIdSocketIdMap) => {
   const message = await createMessage(chatId, data.authorId, data.message);
   // if its a new chat, we send chat data too to the recipient
   if (data.newChat === true) {
-    const chat = await Chat.findOne({ _id: mongoose.Types.ObjectId(chatId) });
+    let chat = await Chat.findOne({
+      _id: mongoose.Types.ObjectId(chatId),
+    }).populate("users", "-contacts -chats -password");
+
     socket
       .to(userIdSocketIdMap[data.recipientId])
       .emit("new-chat-message", { message, chat });
