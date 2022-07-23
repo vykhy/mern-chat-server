@@ -49,6 +49,7 @@ const chatRouter = require("./routers/chatRouter");
 const User = require("./models/User");
 const Chat = require("./models/Chat");
 const Message = require("./models/Message");
+const { handleMessageRead } = require("./socketEventHandlers/messageRead");
 
 // SOCKET MIDDLEWARE
 socket.use((socket, next) => {
@@ -65,6 +66,9 @@ socket.on("connection", (io) => {
     handleSendMessage(socket, io, data, userIdSocketIdMap);
 
     io.emit("found", { response: "message received" });
+  });
+  io.on("message-read", (data) => {
+    handleMessageRead(socket, data, io, userIdSocketIdMap);
   });
   io.on("disconnect", () => {
     console.log("socket disconnected");
@@ -105,6 +109,6 @@ app.get("/deletecontacts", verify, async (req, res) => {
 
 //showUsers();
 //showChats();
-deleteChats();
+//deleteChats();
 
 http.listen(process.env.PORT || 8000);
