@@ -6,11 +6,9 @@ const mongoose = require("mongoose");
  * this function handles when a user sends a new message
  */
 exports.handleSendMessage = async (socket, io, data, userIdSocketIdMap) => {
-  console.log(data);
   let chatId = data.chatId;
   // save message to database
   const message = await createMessage(chatId, data.authorId, data.message);
-
   // if its a new chat, we send chat data too to the recipient
   if (data.newChat === true) {
     const chat = await Chat.findOne({ _id: mongoose.Types.ObjectId(chatId) });

@@ -6,8 +6,13 @@ const http = require("http").createServer(app);
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 
-const { verify } = require("./middleware/verify");
+const { handleMessageRead } = require("./socketEventHandlers/messageRead");
 const { handleSendMessage } = require("./socketEventHandlers/sendMessage.js");
+const {
+  handleMessageDelivered,
+} = require("./socketEventHandlers/messageDelivered");
+
+const { verify } = require("./middleware/verify");
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,7 +54,6 @@ const chatRouter = require("./routers/chatRouter");
 const User = require("./models/User");
 const Chat = require("./models/Chat");
 const Message = require("./models/Message");
-const { handleMessageRead } = require("./socketEventHandlers/messageRead");
 
 // SOCKET MIDDLEWARE
 socket.use((socket, next) => {
@@ -64,11 +68,12 @@ socket.on("connection", (io) => {
 
   io.on("send-message", (data) => {
     handleSendMessage(socket, io, data, userIdSocketIdMap);
-
-    io.emit("found", { response: "message received" });
   });
   io.on("message-read", (data) => {
     handleMessageRead(socket, data, io, userIdSocketIdMap);
+  });
+  io.on("message-delivered", (data) => {
+    handleMessageDelivered(socket, data, userIdSocketIdMap);
   });
   io.on("disconnect", () => {
     console.log("socket disconnected");
