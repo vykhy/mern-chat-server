@@ -51,6 +51,7 @@ const socket = require("socket.io")(http, {
 const authRouter = require("./routers/authRouter");
 const contactRouter = require("./routers/contactRouter");
 const chatRouter = require("./routers/chatRouter");
+const userRouter = require("./routers/userRouter");
 const User = require("./models/User");
 const Chat = require("./models/Chat");
 const Message = require("./models/Message");
@@ -83,6 +84,7 @@ socket.on("connection", (io) => {
 app.use("/auth", authRouter);
 app.use("/contacts", verify, contactRouter);
 app.use("/chats", verify, chatRouter);
+app.use("/users", verify, userRouter);
 // for assistance during development
 app.get("/test", verify, (req, res) => {
   console.log("adad");
@@ -114,6 +116,6 @@ app.get("/deletecontacts", verify, async (req, res) => {
 
 //showUsers();
 //showChats();
-deleteChats();
+//deleteChats();
 
 http.listen(process.env.PORT || 8000);
