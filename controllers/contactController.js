@@ -55,6 +55,7 @@ exports.getContactById = async (req, res) => {
 exports.addContact = async (req, res) => {
   // get form values
   const { name, email } = req.body;
+  console.log(name)
   const userId = req.userId;
   let userToAdd;
   let error = null;

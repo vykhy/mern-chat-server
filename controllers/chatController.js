@@ -31,7 +31,7 @@ exports.getChats = async (req, res) => {
   try {
     let chats = await Chat.find(
       {
-        $in: { users: id },
+         users: id ,
       },
       "-createdAt -updatedAt"
     ).populate("users", "-chats -contacts -password");
