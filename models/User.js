@@ -44,6 +44,10 @@ const User = new mongoose.Schema(
       type: String,
       default: "",
     },
+    thumbnail: {
+      type: String,
+      default: "",
+    },
     about: {
       type: String,
       default: "Hello. I am using chat app!",

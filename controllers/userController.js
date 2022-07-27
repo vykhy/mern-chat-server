@@ -20,3 +20,25 @@ exports.getUser = async (req, res) => {
     return res.sendStatus(500);
   }
 };
+
+exports.updateProfileImage = async (req, res) => {
+  const { userId } = req;
+  try {
+    const fullUrl = req.protocol + "://" + req.get("host");
+    const user = await User.findOneAndUpdate(
+      { _id: mongoose.Types.ObjectId(userId) },
+      {
+        profilePicture: `${fullUrl}/images/${req.fileName}`,
+        thumbnail: `${fullUrl}/images/thumbnails/${req.fileName}`,
+      },
+      { new: true }
+    );
+    return res.json({
+      id: user.id,
+      name: user.firstName + " " + user.lastName,
+      thumbnail: user.thumbnail,
+    });
+  } catch (err) {
+    return res.sendStatus(500);
+  }
+};

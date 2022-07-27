@@ -123,7 +123,7 @@ exports.login = async (req, res) => {
         return res.json({
           userId: user._id,
           userName: `${user.firstName} ${user.lastName}`,
-          profilePicture: user.profilePicture,
+          thumbnail: user.thumbnail,
           accessToken,
         });
       } else if (err) {

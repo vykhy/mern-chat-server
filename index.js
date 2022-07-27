@@ -1,4 +1,5 @@
-const app = require("express")();
+const express = require("express");
+const app = express();
 const env = require("dotenv");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -14,6 +15,7 @@ const {
 
 const { verify } = require("./middleware/verify");
 
+app.use(express.static("/public"));
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -85,6 +87,12 @@ app.use("/auth", authRouter);
 app.use("/contacts", verify, contactRouter);
 app.use("/chats", verify, chatRouter);
 app.use("/users", verify, userRouter);
+app.use("/images/thumbnails/:path", (req, res) =>
+  res.sendFile(__dirname + "/public/images/thumbnails/" + req.params.path)
+);
+app.use("/images/:path", (req, res) =>
+  res.sendFile(__dirname + "/public/images/" + req.params.path)
+);
 // for assistance during development
 app.get("/test", verify, (req, res) => {
   console.log("adad");
