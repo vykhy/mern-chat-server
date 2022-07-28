@@ -6,6 +6,7 @@ const userController = require("../controllers/userController");
 const uploadImage = require("../middleware/imageUpload");
 
 router.get("/:id", userController.getUser);
+router.put("/profile", userController.updateProfile);
 router.post(
   "/profile-image",
   upload.single("image"),
