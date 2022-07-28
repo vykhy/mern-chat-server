@@ -124,6 +124,7 @@ exports.login = async (req, res) => {
           userId: user._id,
           userName: `${user.firstName} ${user.lastName}`,
           thumbnail: user.thumbnail,
+          profilePicture: user.profilePicture,
           accessToken,
         });
       } else if (err) {
