@@ -34,16 +34,35 @@ const userIdSocketIdMap = {};
 // DB connection
 mongoose.connect(process.env.DB_URL, () => console.log("db connected..."));
 
-app.use(cors());
+const corsOptions = {
+  origin: [process.env.CLIENT_URL, "http://localhost:3000"],
+  credentials: true,
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  handlePreFlightRequest: (req, res) => {
+    res.writeHead(200, {
+      "Access-Control-Allow-Origin": [
+        process.env.CLIENT_URL,
+        "http://localhost:3000",
+      ],
+      // "Access-Control-Allow-Credentials": "true",
+      "Access-Control-Allow-Methods": '["GET", "POST", "PUT","DELETE"]',
+    });
+  },
+};
+app.use(cors(corsOptions));
+
 const socket = require("socket.io")(http, {
   cors: {
-    origin: process.env.CLIENT_URL,
-    methods: ["GET", "POST", "DELETE"],
+    origin: [process.env.CLIENT_URL, "http://localhost:3000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
 
     handlePreFlightRequest: (req, res) => {
       res.writeHead(200, {
-        "Access-Control-Allow-Origin": process.env.CLIENT_URL,
-        "Access-Control-Allow-Methods": '["GET", "POST", "DELETE"]',
+        "Access-Control-Allow-Origin": [
+          process.env.CLIENT_URL,
+          "http://localhost:3000",
+        ],
+        "Access-Control-Allow-Methods": '["GET", "POST", "PUT","DELETE"]',
       });
     },
   },
