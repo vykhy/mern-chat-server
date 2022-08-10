@@ -55,7 +55,7 @@ exports.getContactById = async (req, res) => {
 exports.addContact = async (req, res) => {
   // get form values
   const { name, email } = req.body;
-  console.log(name)
+  console.log(name);
   const userId = req.userId;
   let userToAdd;
   let error = null;
@@ -68,6 +68,20 @@ exports.addContact = async (req, res) => {
       error = "User with this email does not exist";
     }
   }
+  // check if user has alread saved this contact
+  try {
+    const thisUser = await User.findOne({
+      _id: mongoose.Types.ObjectId(userId),
+    });
+    const contactExists = thisUser.contacts.filter(
+      (contact) => contact.contactId === userToAdd._id
+    );
+    if (contactExists) error = "This contact already exists";
+  } catch (err) {
+    console.log(err);
+    return res.sendStatus(500);
+  }
+
   if (error !== null) {
     return res.status(200).json({ error });
   }

@@ -3,16 +3,25 @@ const Message = require("../models/Message");
 const mongoose = require("mongoose");
 
 exports.createChat = async (req, res) => {
-  console.log(req.body);
   let { userId1, userId2 } = req.body;
 
   try {
-    const chat = await Chat.create({
+    // check whether chat of these two users already exists
+    const chatExists = await Chat.findOne({
       users: [
         mongoose.Types.ObjectId(userId1),
         mongoose.Types.ObjectId(userId2),
       ],
     });
+    // create only if not already exists
+    if (!chatExists) {
+      const chat = await Chat.create({
+        users: [
+          mongoose.Types.ObjectId(userId1),
+          mongoose.Types.ObjectId(userId2),
+        ],
+      });
+    }
     const newChat = await Chat.findOne({ _id: chat._id }).populate(
       "users",
       "-chats -contacts -password"
@@ -31,7 +40,7 @@ exports.getChats = async (req, res) => {
   try {
     let chats = await Chat.find(
       {
-         users: id ,
+        users: id,
       },
       "-createdAt -updatedAt"
     ).populate("users", "-chats -contacts -password");
