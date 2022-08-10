@@ -53,7 +53,7 @@ exports.updateProfileImage = async (req, res) => {
       { _id: mongoose.Types.ObjectId(userId) },
       {
         profilePicture: `${fullUrl}/images/${req.fileName}`,
-        thumbnail: `${fullUrl}/images/thumbnails/${req.fileName}`,
+        thumbnail: `${fullUrl}/thumbnails/${req.fileName}`,
       },
       { new: true }
     );

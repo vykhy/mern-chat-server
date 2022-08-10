@@ -106,8 +106,8 @@ app.use("/auth", authRouter);
 app.use("/contacts", verify, contactRouter);
 app.use("/chats", verify, chatRouter);
 app.use("/users", verify, userRouter);
-app.use("/images/thumbnails/:path", (req, res) =>
-  res.sendFile(__dirname + "/public/images/thumbnails/" + req.params.path)
+app.use("/thumbnails/:path", (req, res) =>
+  res.sendFile(__dirname + "/public/thumbnails/" + req.params.path)
 );
 app.use("/images/:path", (req, res) =>
   res.sendFile(__dirname + "/public/images/" + req.params.path)

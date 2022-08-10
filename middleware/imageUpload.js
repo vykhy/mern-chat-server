@@ -10,7 +10,7 @@ const uploadImage = async (req, res, next) => {
       .toFile(`public/images/${fileName}`);
     const thumbnail = await sharp(req.file.buffer)
       .resize({ height: 50, width: 50 })
-      .toFile(`public/images/thumbnails/${fileName}`);
+      .toFile(`public/thumbnails/${fileName}`);
     next();
   } catch (err) {
     console.log(err);
