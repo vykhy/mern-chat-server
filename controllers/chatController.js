@@ -7,6 +7,7 @@ exports.createChat = async (req, res) => {
 
   try {
     // check whether chat of these two users already exists
+    let chat;
     const chatExists = await Chat.findOne({
       users: [
         mongoose.Types.ObjectId(userId1),
@@ -22,6 +23,7 @@ exports.createChat = async (req, res) => {
         ],
       });
     }
+    chat = chatExists;
     const newChat = await Chat.findOne({ _id: chat._id }).populate(
       "users",
       "-chats -contacts -password"

@@ -76,7 +76,7 @@ exports.addContact = async (req, res) => {
     const contactExists = thisUser.contacts.filter(
       (contact) => contact.contactId === userToAdd._id
     );
-    if (contactExists) error = "This contact already exists";
+    if (contactExists.length > 0) error = "This contact already exists";
   } catch (err) {
     console.log(err);
     return res.sendStatus(500);
