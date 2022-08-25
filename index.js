@@ -31,9 +31,10 @@ const PORT = process.env.APP_PORT;
 
 const userIdSocketIdMap = {};
 
+let dbconn = 'not connected'
 // DB connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@chat-db.kvziqeq.mongodb.net/mern-chat?retryWrites=true&w=majority`;
-mongoose.connect(uri, () => console.log("db connected..."));
+mongoose.connect(uri, () => dbconn = 'db connected...');
 
 const corsOptions = {
   origin: [process.env.CLIENT_URL, "http://localhost:3000"],
@@ -104,7 +105,7 @@ socket.on("connection", (io) => {
 });
 
 app.get('/', (req, res) => {
-  return res.send('Application running...')
+  return res.send('Application running...' + dbconn)
 })
 app.use("/auth", authRouter);
 app.use("/contacts", verify, contactRouter);
