@@ -41,7 +41,7 @@ mongoose.connect(uri, async () => {
     dbconn = JSON.stringify(users)
   }
   catch(err){
-    dbconn = JSON.stringify(dbconn)
+    dbconn = JSON.stringify(err)
   }
 });
 
