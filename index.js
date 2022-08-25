@@ -32,7 +32,8 @@ const PORT = process.env.APP_PORT;
 const userIdSocketIdMap = {};
 
 // DB connection
-mongoose.connect(process.env.DB_URL, () => console.log("db connected..."));
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@chat-db.kvziqeq.mongodb.net/mern-chat?retryWrites=true&w=majority`;
+mongoose.connect(uri, () => console.log("db connected..."));
 
 const corsOptions = {
   origin: [process.env.CLIENT_URL, "http://localhost:3000"],
@@ -102,6 +103,9 @@ socket.on("connection", (io) => {
   });
 });
 
+app.get('/', (req, res) => {
+  return res.send('Application running...')
+})
 app.use("/auth", authRouter);
 app.use("/contacts", verify, contactRouter);
 app.use("/chats", verify, chatRouter);
@@ -144,5 +148,18 @@ app.get("/deletecontacts", verify, async (req, res) => {
 //showUsers();
 //showChats();
 //deleteChats();
+
+// process.env: 
+//   ACCESS_TOKEN_KEY:"Iamthegreatest"
+//   REFRESH_TOKEN_KEY:"Heisthegreatest"
+
+//   CLIENT_URL:"http://localhost:5000"
+
+//   DB_DEV_URL:"mongodb://localhost/mern-chat"
+//   DB_URL=
+
+//   DB_USER:"application"
+//   DB_PASSWORD:"63b1DJJ7RODeYmBJ"
+
 
 http.listen(process.env.PORT || 8000);
