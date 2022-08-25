@@ -107,11 +107,19 @@ exports.login = async (req, res) => {
   let error = null;
   // validate password and user from db
 
-  const user = await User.findOne({ email });
-  if (!user)
+  let user
+  try {
+    const user = await User.findOne({ email })
+    if (!user)
     return res
       .status(400)
       .json({ message: "User with this email does not exist" });
+    else
+      user = user
+  } catch (err) {
+    return res.status(500).message(err)
+  }
+  ;
   //Check whether password is correct
   try {
     bcrypt.compare(password, user.password, (err, result) => {

@@ -34,7 +34,16 @@ const userIdSocketIdMap = {};
 let dbconn = 'not connected'
 // DB connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@chat-db.kvziqeq.mongodb.net/mern-chat?retryWrites=true&w=majority`;
-mongoose.connect(uri, () => dbconn = 'db connected...');
+mongoose.connect(uri, () => {
+  const User = require('./models/User')
+  try{
+    const users = await User.find()
+    dbconn = JSON.stringify(users)
+  }
+  catch(err){
+    dbconn = JSON.stringify(dbconn)
+  }
+});
 
 const corsOptions = {
   origin: [process.env.CLIENT_URL, "http://localhost:3000"],
