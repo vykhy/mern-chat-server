@@ -150,17 +150,4 @@ app.get("/deletecontacts", verify, async (req, res) => {
 //showChats();
 //deleteChats();
 
-// process.env: 
-//   ACCESS_TOKEN_KEY:"Iamthegreatest"
-//   REFRESH_TOKEN_KEY:"Heisthegreatest"
-
-//   CLIENT_URL:"http://localhost:5000"
-
-//   DB_DEV_URL:"mongodb://localhost/mern-chat"
-//   DB_URL=
-
-//   DB_USER:"application"
-//   DB_PASSWORD:"63b1DJJ7RODeYmBJ"
-
-
 http.listen(process.env.PORT || 8000);
