@@ -1,7 +1,14 @@
 const sharp = require("sharp");
+const fs = require('fs')
 
 const uploadImage = async (req, res, next) => {
   const userId = req.userId;
+  const folders = ['public/images', 'public/thumbnails']
+  folders.forEach((folder) => {
+    if(!fs.existsSync(folder)){
+      fs.mkdirSync(folder)
+    }
+  })
   try {
     const fileName = `${userId}-${req.file.originalname}`;
     req.fileName = fileName;
