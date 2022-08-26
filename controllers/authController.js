@@ -117,7 +117,7 @@ exports.login = async (req, res) => {
     else
       user = user
   } catch (err) {
-    return res.status(500).json(err)
+    return res.status(500).json({ message: err})
   }
   ;
   //Check whether password is correct
@@ -149,7 +149,7 @@ exports.login = async (req, res) => {
           accessToken,
         });
       } else if (err) {
-        return res.status(400).json("Username or password incorrect!");
+        return res.status(400).json({ err: "Username or password incorrect!"});
       }
     });
   } catch (error) {
