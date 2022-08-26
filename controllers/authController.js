@@ -107,19 +107,20 @@ exports.login = async (req, res) => {
   let error = null;
   // validate password and user from db
 
-  let user
+  let user;
   try {
-    const user = await User.findOne({ email })
-    if (!user)
-    return res
-      .status(400)
-      .json({ message: "User with this email does not exist" });
-    else
-      user = user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res
+        .status(400)
+        .json({ message: "User with this email does not exist" });
+    } else {
+      user = user;
+    }
   } catch (err) {
-    return res.status(500).json({ message: err})
+    console.log(err)
+    return res.status(500).json({ message: err });
   }
-  ;
   //Check whether password is correct
   try {
     bcrypt.compare(password, user.password, (err, result) => {
@@ -149,7 +150,7 @@ exports.login = async (req, res) => {
           accessToken,
         });
       } else if (err) {
-        return res.status(400).json({ err: "Username or password incorrect!"});
+        return res.status(400).json({ err: "Username or password incorrect!" });
       }
     });
   } catch (error) {
