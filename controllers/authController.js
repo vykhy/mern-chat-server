@@ -109,17 +109,17 @@ exports.login = async (req, res) => {
 
   let user;
   try {
-    const user = await User.findOne({ email });
-    if (!user) {
+    const userExists = await User.findOne({ email });
+    if (!userExists) {
       return res
         .status(400)
         .json({ message: "User with this email does not exist" });
     } else {
-      user = user;
+      user = userExists;
     }
   } catch (err) {
-    console.log(err)
-    return res.status(500).json({ message: err });
+    console.log(err);
+    return res.status(500);
   }
   //Check whether password is correct
   try {
