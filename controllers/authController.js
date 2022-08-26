@@ -117,7 +117,7 @@ exports.login = async (req, res) => {
     else
       user = user
   } catch (err) {
-    return res.status(500).message(err)
+    return res.status(500).json(err)
   }
   ;
   //Check whether password is correct

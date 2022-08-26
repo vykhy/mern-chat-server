@@ -34,14 +34,12 @@ const userIdSocketIdMap = {};
 let dbconn = 'not connected'
 // DB connection
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@chat-db.kvziqeq.mongodb.net/mern-chat?retryWrites=true&w=majority`;
-mongoose.connect(uri, async () => {
-  const User = require('./models/User')
+mongoose.connect(uri, () => {
+  dbconn = 'connected'
   try{
-    const users = await User.find()
-    dbconn = JSON.stringify(users)
   }
   catch(err){
-    dbconn = JSON.stringify(err)
+    dbconn = 'failed '
   }
 });
 
