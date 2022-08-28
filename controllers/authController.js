@@ -112,8 +112,8 @@ exports.login = async (req, res) => {
     const userExists = await User.findOne({ email });
     if (!userExists) {
       return res
-        .status(400)
-        .json({ message: "User with this email does not exist" });
+        .status(200)
+        .json({ error: "User with this email does not exist" });
     } else {
       user = userExists;
     }
@@ -149,8 +149,8 @@ exports.login = async (req, res) => {
           profilePicture: user.profilePicture,
           accessToken,
         });
-      } else if (err) {
-        return res.status(400).json({ err: "Username or password incorrect!" });
+      } else {
+        return res.status(200).json({ error: "Username or password incorrect!" });
       }
     });
   } catch (error) {
