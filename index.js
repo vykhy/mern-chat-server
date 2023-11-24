@@ -115,6 +115,9 @@ socket.on("connection", (io) => {
 app.get("/", (req, res) => {
   return res.send("Application running..." + dbconn);
 });
+app.get("/test", (req, res) => {
+  return res.send("🔥 🔥 🔥");
+});
 app.use("/auth", authRouter);
 app.use("/contacts", verify, contactRouter);
 app.use("/chats", verify, chatRouter);

@@ -1,0 +1,20 @@
+runtime: custom
+instance_class: F1
+
+env_variables:
+  ACCESS_TOKEN_KEY: wrong
+  REFRESH_TOKEN_KEY: wrongtoo
+
+  CLIENT_URL: http://localhost:3000
+
+  DB_URL: mongodb://localhost/mern-chat
+
+  DB_USER: wrong
+  DB_PASSWORD: wrong too
+
+automatic_scaling:
+  max_instances: 1
+
+handlers:
+  - url: /.*
+    script: auto

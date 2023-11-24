@@ -2,3 +2,4 @@
 node_modules
 public/thumbnails/**
 public/images/**
+app.yaml
