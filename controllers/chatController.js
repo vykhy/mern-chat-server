@@ -9,10 +9,12 @@ exports.createChat = async (req, res) => {
     // check whether chat of these two users already exists
     let chat;
     const chatExists = await Chat.findOne({
-      users: [
-        mongoose.Types.ObjectId(userId1),
-        mongoose.Types.ObjectId(userId2),
-      ],
+      users: {
+        $all: [
+          mongoose.Types.ObjectId(userId1),
+          mongoose.Types.ObjectId(userId2),
+        ],
+      },
     });
     // create only if not already exists
     if (!chatExists) {

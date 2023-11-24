@@ -150,7 +150,9 @@ exports.login = async (req, res) => {
           accessToken,
         });
       } else {
-        return res.status(200).json({ error: "Username or password incorrect!" });
+        return res
+          .status(200)
+          .json({ error: "Username or password incorrect!" });
       }
     });
   } catch (error) {
