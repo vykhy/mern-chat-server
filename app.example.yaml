@@ -1,4 +1,4 @@
-runtime: custom
+runtime: nodejs18
 instance_class: F1
 
 env_variables:
